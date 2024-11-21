@@ -1,2 +1,1 @@
-# php-app
 PHP App
