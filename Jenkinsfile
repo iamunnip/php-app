@@ -39,24 +39,10 @@ pipeline {
             }
             steps {
                 sh'''
-                    docker image build -f Dockerfile -t ${DOCKER_IMAGE}:latest .
+                    docker image build -f Dockerfile -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
                     docker image ls
                 '''
             }
-        }
-
-        stage('Login to DockerHub') {
-            agent {
-                docker {
-                    image 'docker:27.3.1-dind'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh'''
-                    echo "$DOCKER_HUB_TOKEN" | docker login -u ${DOCKER_HUB_USER} --password-stdin
-                '''
-            }            
         }
 
         stage('Push to DockerHub') {
@@ -68,7 +54,7 @@ pipeline {
             }
             steps {
                 sh'''
-                    docker image tag ${DOCKER_IMAGE}:latest ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    echo "$DOCKER_HUB_TOKEN" | docker login -u ${DOCKER_HUB_USER} --password-stdin
                     docker image push ${DOCKER_IMAGE}:${DOCKER_TAG}
                 '''
             }
