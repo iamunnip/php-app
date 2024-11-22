@@ -53,7 +53,7 @@ pipeline {
             }
             steps {
                 sh'''
-                    trivy image --severity HIGH,CRITICAL --format template --template "@contrib/html.tpl" --output trivy-scan-report.html ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    trivy image --severity HIGH,CRITICAL --format template --template /contrib/html.tpl --output trivy-scan-report.html ${DOCKER_IMAGE}:${DOCKER_TAG}
                 '''
                 archiveArtifacts artifacts: 'trivy-scan-report.html', allowEmptyArchive: true
             }
