@@ -39,7 +39,7 @@ pipeline {
             }
             steps {
                 sh'''
-                    docker image build -f Dockerfile -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
+                    docker image build -f Dockerfile -t ${DOCKER_IMAGE}:latest .
                     docker image ls
                 '''
             }
@@ -54,7 +54,7 @@ pipeline {
             }
             steps {
                 sh'''
-                    docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_TOKEN}
+                    echo "$DOCKER_HUB_TOKEN" | docker login -u ${DOCKER_HUB_USER} --password-stdin
                 '''
             }            
         }
@@ -68,6 +68,7 @@ pipeline {
             }
             steps {
                 sh'''
+                    docker image tag ${DOCKER_IMAGE}:latest ${DOCKER_IMAGE}:${DOCKER_TAG}
                     docker image push ${DOCKER_IMAGE}:${DOCKER_TAG}
                 '''
             }
