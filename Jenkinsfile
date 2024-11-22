@@ -7,8 +7,8 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch 'main',
-                url: 'https://github.com/iamunnip/learning-jenkins.git'
+                git branch: 'main',
+                    url: 'https://github.com/iamunnip/learning-jenkins.git'
                 sh 'ls -al'
             }
         }
