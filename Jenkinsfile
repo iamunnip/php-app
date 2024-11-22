@@ -9,7 +9,15 @@ pipeline {
     }
 
     triggers {
-        pollSCM('H/1 * * * *')
+        pollSCM('1 * * * *')
+    }
+
+    environment {
+        DOCKER_HUB_USER = "iamunnip"
+        DOCKER_HUB_TOKEN = credentials('docker-hub-token')
+        DOCKER_IMAGE = "iamunnip/php-app"
+        DOCKER_TAG = "${BUILD_NUMBER}"
+
     }
 
     stages {
@@ -22,7 +30,7 @@ pipeline {
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             agent {
                 docker {
                     image 'docker:27.3.1-dind'
@@ -31,10 +39,46 @@ pipeline {
             }
             steps {
                 sh'''
-                    docker image build -f Dockerfile -t php:v1 .
+                    docker image build -f Dockerfile -t ${DOCKER_IMAGE}:${DOCKER_TAG}
                     docker image ls
                 '''
             }
+        }
+
+        stage('Login to DockerHub') {
+            agent {
+                docker {
+                    image 'docker:27.3.1-dind'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh'''
+                    'echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USER --password-stdin'
+                '''
+            }            
+        }
+
+        stage('Push to DockerHub') {
+            agent {
+                docker {
+                    image 'docker:27.3.1-dind'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh'''
+                    docker image push ${DOCKER_IMAGE}:${DOCKER_TAG}
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            sh'''
+                docker image rm ${DOCKER_IMAGE}:${DOCKER_TAG}
+            '''
         }
     }
 }
