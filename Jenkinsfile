@@ -44,6 +44,20 @@ pipeline {
             }
         }
 
+        stage('Trivy Scan') {
+            agent {
+                docker {
+                    image 'aquasec/trivy:0.57.1'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh'''
+                    trivy image --severity HIGH,CRITICAL ${DOCKER_IMAGE}:${DOCKER_TAG}
+                '''
+            }
+        }
+
         stage('Push to Registry') {
             agent {
                 docker {
