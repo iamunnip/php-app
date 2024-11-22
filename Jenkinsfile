@@ -30,7 +30,7 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Image') {
             agent {
                 docker {
                     image 'docker:27.3.1-dind'
@@ -40,12 +40,11 @@ pipeline {
             steps {
                 sh'''
                     docker image build -f Dockerfile -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
-                    docker image ls
                 '''
             }
         }
 
-        stage('Push to DockerHub') {
+        stage('Push to Registry') {
             agent {
                 docker {
                     image 'docker:27.3.1-dind'
