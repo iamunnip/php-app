@@ -1,6 +1,11 @@
 pipeline {
+
     agent {
         label 'jenkins-agent'
+    }
+
+    options {
+        skipDefaultCheckout()
     }
 
     stages {
