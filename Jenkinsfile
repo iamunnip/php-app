@@ -39,7 +39,7 @@ pipeline {
             }
             steps {
                 sh'''
-                    docker image build -f Dockerfile -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
+                    docker image build --file Dockerfile --tag ${DOCKER_IMAGE}:${DOCKER_TAG} .
                 '''
             }
         }
@@ -54,8 +54,9 @@ pipeline {
             }
             steps {
                 sh'''
-                    trivy image --severity HIGH,CRITICAL ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    trivy image --severity HIGH,CRITICAL --format template --template "@contrib/html.tpl" --output trivy-scan-report.html ${DOCKER_IMAGE}:${DOCKER_TAG}
                 '''
+                archiveArtifacts artifacts: 'trivy-scan-report.html', allowEmptyArchive: true
             }
         }
 
@@ -68,10 +69,20 @@ pipeline {
             }
             steps {
                 sh'''
-                    echo "$DOCKER_HUB_TOKEN" | docker login -u ${DOCKER_HUB_USER} --password-stdin
+                    echo "$DOCKER_HUB_TOKEN" | docker login --username ${DOCKER_HUB_USER} --password-stdin
                     docker image push ${DOCKER_IMAGE}:${DOCKER_TAG}
                 '''
             }
         }
+    }
+
+    post {
+        publishHTML([allowMissing: false,
+            alwaysLinkToLastBuild: false,
+            keepAll: false, reportDir: '',
+            reportFiles: 'trivy-scan-report.html',
+            reportName: 'Trivy Scan Report',
+            reportTitles: '',
+            useWrapperFileDirectly: true])
     }
 }
