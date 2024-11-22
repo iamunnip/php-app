@@ -39,7 +39,7 @@ pipeline {
             }
             steps {
                 sh'''
-                    docker image build -f Dockerfile -t ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    docker image build -f Dockerfile -t ${DOCKER_IMAGE}:${DOCKER_TAG} .
                     docker image ls
                 '''
             }
