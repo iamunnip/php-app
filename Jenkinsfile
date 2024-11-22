@@ -53,9 +53,8 @@ pipeline {
             }
             steps {
                 sh'''
-                    trivy image --severity HIGH,CRITICAL --format template --template "@/contrib/html.tpl" --output trivy-scan-report.html ${DOCKER_IMAGE}:${DOCKER_TAG}
+                    trivy image --severity CRITICAL,HIGH --format template --template "@/contrib/html.tpl" --output trivy-scan-report.html ${DOCKER_IMAGE}:${DOCKER_TAG}
                 '''
-                archiveArtifacts artifacts: 'trivy-scan-report.html', allowEmptyArchive: true
             }
         }
 
@@ -77,8 +76,9 @@ pipeline {
 
     post {
         always {
-            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false,
-                keepAll: false, reportDir: '', reportFiles: 'trivy-scan-report.html',
+            archiveArtifacts artifacts: 'trivy-scan-report.html', allowEmptyArchive: true
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: true,
+                keepAll: false, reportDir: '.', reportFiles: 'trivy-scan-report.html',
                 reportName: 'Trivy Scan Report', reportTitles: '',
                 useWrapperFileDirectly: true])
         }
