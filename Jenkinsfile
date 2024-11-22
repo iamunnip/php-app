@@ -54,8 +54,7 @@ pipeline {
             }
             steps {
                 sh'''
-                    printenv
-                    docker login -u ${env.DOCKER_HUB_USER} -p ${env.DOCKER_HUB_TOKEN}
+                    docker login -u ${DOCKER_HUB_USER} -p ${DOCKER_HUB_TOKEN}
                 '''
             }            
         }
