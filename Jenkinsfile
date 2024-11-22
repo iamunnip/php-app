@@ -25,13 +25,14 @@ pipeline {
         stage('Build') {
             agent {
                 docker {
-                    image 'php:8.1-apache'
+                    image 'docker:27.3.1-dind'
                     reuseNode true
                 }
             }
             steps {
                 sh'''
                     docker image build -f Dockerfile -t php:v1 .
+                    docker image ls
                 '''
             }
         }
