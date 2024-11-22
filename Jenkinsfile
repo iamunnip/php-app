@@ -24,9 +24,8 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                git branch: 'main',
+                git branch: 'php',
                     url: 'https://github.com/iamunnip/php-app.git'
-                sh 'ls -al'
             }
         }
 
@@ -77,12 +76,11 @@ pipeline {
     }
 
     post {
-        publishHTML([allowMissing: false,
-            alwaysLinkToLastBuild: false,
-            keepAll: false, reportDir: '',
-            reportFiles: 'trivy-scan-report.html',
-            reportName: 'Trivy Scan Report',
-            reportTitles: '',
-            useWrapperFileDirectly: true])
+        always {
+            publishHTML([allowMissing: false, alwaysLinkToLastBuild: false,
+                keepAll: false, reportDir: '', reportFiles: 'trivy-scan-report.html',
+                reportName: 'Trivy Scan Report', reportTitles: '',
+                useWrapperFileDirectly: true])
+        }
     }
 }
