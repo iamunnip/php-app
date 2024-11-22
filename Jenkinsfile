@@ -48,6 +48,7 @@ pipeline {
             agent {
                 docker {
                     image 'aquasec/trivy:0.57.1'
+                    args '--entrypoint='
                     reuseNode true
                 }
             }
