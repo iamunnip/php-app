@@ -21,5 +21,19 @@ pipeline {
                 sh 'ls -al'
             }
         }
+
+        stage('Build') {
+            agent {
+                docker {
+                    image 'php:8.1-apache'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh'''
+                    docker image build -f Dockerfile -t php:v1 .
+                '''
+            }
+        }
     }
 }
