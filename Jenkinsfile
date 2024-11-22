@@ -8,6 +8,14 @@ pipeline {
         skipDefaultCheckout()
     }
 
+    triggers {
+        pollSCM('H/1 * * * *')
+    }
+
+    tools {
+        git 'Default'
+    }
+
     stages {
 
         stage('Checkout Code') {
