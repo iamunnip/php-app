@@ -54,7 +54,7 @@ pipeline {
             }
             steps {
                 sh'''
-                    'echo $DOCKER_HUB_TOKEN | docker login -u $DOCKER_HUB_USER --password-stdin'
+                    'docker login -u ${env.DOCKER_HUB_USER} -p ${env.DOCKER_HUB_TOKEN}'
                 '''
             }            
         }
