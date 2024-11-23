@@ -34,6 +34,7 @@ pipeline {
             agent {
                 docker {
                     image 'docker:27.3.1-dind'
+                    args '--network jenkins'
                     reuseNode true
                 }
             }
@@ -48,6 +49,7 @@ pipeline {
             agent {
                 docker {
                     image 'sonarsource/sonar-scanner-cli:11.1'
+                    args '--network jenkins'
                     reuseNode true
                 }
             }
@@ -62,7 +64,7 @@ pipeline {
             agent {
                 docker {
                     image 'aquasec/trivy:0.57.1'
-                    args '--entrypoint='
+                    args '--entrypoint= --network jenkins'
                     reuseNode true
                 }
             }
@@ -77,6 +79,7 @@ pipeline {
             agent {
                 docker {
                     image 'docker:27.3.1-dind'
+                    args '--network jenkins'
                     reuseNode true
                 }
             }
