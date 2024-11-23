@@ -17,6 +17,7 @@ pipeline {
         DOCKER_HUB_TOKEN = credentials('docker-hub-token')
         DOCKER_IMAGE = "iamunnip/php-app"
         DOCKER_TAG = "${BUILD_NUMBER}"
+        SONAR_TOKEN = credentials('sonar-token')
 
     }
 
@@ -39,6 +40,20 @@ pipeline {
             steps {
                 sh'''
                     docker image build --file Dockerfile --tag ${DOCKER_IMAGE}:${DOCKER_TAG} .
+                '''
+            }
+        }
+
+        stage('Sonar Scan') {
+            agent {
+                docker {
+                    image 'sonarsource/sonar-scanner-cli:11.1'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh'''
+                    sonar-scanner -Dsonar.projectKey=php-app -Dsonar.sources=. -Dsonar.host.url=http://sonarqube:9000 -Dsonar.token=${SONAR_TOKEN}
                 '''
             }
         }
@@ -76,7 +91,7 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'trivy-scan-report.html', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'trivy-scan-report.html', allowEmptyArchive: true, fingerprint: true
             publishHTML([allowMissing: false, alwaysLinkToLastBuild: true,
                 keepAll: false, reportDir: '.', reportFiles: 'trivy-scan-report.html',
                 reportName: 'Trivy Scan Report', reportTitles: '',
